@@ -2,6 +2,16 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+const cards = document.querySelector(".cards");
+
+axios.get("https://api.github.com/users/AlexanderKarren")
+.then(response => {
+  console.log(response.data);
+  cards.appendChild(BuildCard(response));
+})
+.catch(error => {
+  console.log("Couldn't fetch data –", error);
+})
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
@@ -24,6 +34,22 @@
           user, and adding that card to the DOM.
 */
 
+axios.get("https://api.github.com/users/AlexanderKarren/followers")
+.then(response => {
+  response.data.forEach(user => {
+    axios.get(user.url)
+    .then(followerResponse => {
+      cards.appendChild(BuildCard(followerResponse));
+    })
+    .catch(followerError => {
+      console.log("Couldn't fetch data –", followerError);
+    })
+  })
+})
+.catch(error => {
+  console.log("Couldn't fetch data –", error);
+})
+
 const followersArray = [];
 
 /* Step 3: Create a function that accepts a single object as its only argument,
@@ -45,7 +71,57 @@ const followersArray = [];
 </div>
 
 */
+function BuildCard(object) {
+  // parent container
+  const card = document.createElement("div");
+  card.classList.add("card");
+  // avatar element
+  const avatar = document.createElement("img");
+  avatar.src = object.data.avatar_url;
+  card.appendChild(avatar);
+  // information parent
+  const cardInfo = document.createElement("div");
+  cardInfo.classList.add("card-info");
+  card.appendChild(cardInfo);
+  // name
+  const name = document.createElement("h3");
+  name.classList.add("name");
+  name.textContent = object.data.name;
+  cardInfo.appendChild(name);
+  // username
+  const userName = document.createElement("p");
+  userName.classList.add("username")
+  userName.textContent = object.data.login;
+  cardInfo.appendChild(userName);
+  // location
+  const location = document.createElement("p");
+  location.textContent = `Location: ${object.data.location}`
+  cardInfo.appendChild(location);
+  // profile
+  const profile = document.createElement("p");
+  profile.textContent = "Profile: ";
+  cardInfo.appendChild(profile);
+  // profile URL
+  const profileURL = document.createElement("a");
+  profileURL.href = object.data.html_url;
+  profileURL.textContent = object.data.html_url;
+  profile.appendChild(profileURL);
+  // follower count
+  const followersCount = document.createElement("p");
+  followersCount.textContent = `Followers: ${object.data.followers}`;
+  cardInfo.appendChild(followersCount);
+  // following count
+  const followingCount = document.createElement("p");
+  followingCount.textContent = `Following: ${object.data.following}`;
+  cardInfo.appendChild(followingCount);
+  // bio
+  const bio = document.createElement("p");
+  bio.textContent = `Bio: ${object.data.bio}`;
+  cardInfo.appendChild(bio);
 
+  console.log(card);
+  return card;
+}
 /* List of LS Instructors Github username's: 
   tetondan
   dustinmyers
