@@ -67,6 +67,8 @@ const followersArray = [];
     <p>Followers: {users followers count}</p>
     <p>Following: {users following count}</p>
     <p>Bio: {users bio}</p>
+
+    <span></span>
   </div>
 </div>
 
@@ -86,7 +88,12 @@ function BuildCard(object) {
   // name
   const name = document.createElement("h3");
   name.classList.add("name");
-  name.textContent = object.data.name;
+  if (object.data.name === null) {
+    name.textContent = object.data.login;
+  }
+  else {
+    name.textContent = object.data.name;
+  }
   cardInfo.appendChild(name);
   // username
   const userName = document.createElement("p");
@@ -118,6 +125,68 @@ function BuildCard(object) {
   const bio = document.createElement("p");
   bio.textContent = `Bio: ${object.data.bio}`;
   cardInfo.appendChild(bio);
+
+  // more information container
+  const moreInfo = document.createElement("div");
+  moreInfo.classList.add("more-info");
+  cardInfo.appendChild(moreInfo);
+
+  // account creation date
+  const created = document.createElement("p");
+  created.textContent = `Account created: ${object.data.created_at}`
+  moreInfo.appendChild(created);
+
+  // ID
+  const id = document.createElement("p");
+  id.textContent = `ID: ${object.data.id}`;
+  moreInfo.appendChild(id);
+
+  // Company
+  const company = document.createElement("p");
+  company.textContent = `Company: ${object.data.company}`;
+  moreInfo.appendChild(company);
+
+  // repos parent
+  const repos = document.createElement("p");
+  repos.textContent = "Repos: "
+  moreInfo.appendChild(repos);
+
+  // repos URL
+  const reposURL = document.createElement("a");
+  reposURL.href = object.data.repos_url;
+  reposURL.textContent = object.data.repos_url;
+  repos.appendChild(reposURL);
+
+  // organizations parent
+  const organizations = document.createElement("p");
+  organizations.textContent = "Organizations: "
+  moreInfo.appendChild(organizations);
+
+  // organizations URL
+  const organizationsURL = document.createElement("a");
+  organizationsURL.href = object.data.organizations_url;
+  organizationsURL.textContent = object.data.organizations_url;
+  organizations.appendChild(organizationsURL);
+
+  // expand button
+  const expandButton = document.createElement("p");
+  expandButton.classList.add("expand-button");
+  expandButton.textContent = "\u25BC";
+  card.appendChild(expandButton);
+
+  let expanded = false;
+  expandButton.addEventListener("click", function(event) {
+    if (expanded === false) {
+      gsap.to(expandButton, {rotateZ: "180", duration:.2});
+      gsap.to(card, {height:"auto", duration:.5});
+      expanded = true;
+    }
+    else {
+      gsap.to(expandButton, {rotateZ: "0", duration:.2});
+      gsap.to(card, {height:190, duration:.5});
+      expanded = false;
+    }
+  })
 
   console.log(card);
   return card;
